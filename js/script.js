@@ -1,10 +1,9 @@
 /******************************************
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
+Tamer Morad
 ******************************************/
-//ISSUE click search from pagination page clears weird
 
-// Add variables that store DOM elements you will need to reference and/or manipulate
 const thePage = document.querySelector('div.page');
 const $allStudents = document.querySelectorAll('li.student-item');
 const studentCount = $allStudents.length;
@@ -16,7 +15,7 @@ let shownStudents;
 const $pageNumbers = (theNum) => Math.ceil((theNum) / 10);//function calculates how many pages needed
 const $hideStudents = () => $($allStudents).hide(); // function hides all the students
 
-//Insert Search input field to the DOM
+//Appends Search input field to the DOM
 $('div.page-header').append(
   `<div class="student-search">
     <input placeholder="Search for students...">
@@ -26,60 +25,58 @@ $('div.page-header').append(
 
 //displays 10 students only from the list, based on the current pagination page
 function $displayStudents(topRange, searchResults){
-  if (searchResults === true) {
+  if (searchResults === true) {//pagination if the user is entering a search
     let $range = (currentPage + 1) *10;//sets the end point of the slice
-    currentPage *= 10; //sets the start point of the slice
-    if (currentPage > topRange) {
+    let startRange = currentPage;
+    startRange *= 10; //sets the start point of the slice
+    if (startRange > topRange) {
       $range = topRange;
     }
     $hideStudents(); //hides all the students
+
     //displays only 10 students between the startpoint(currentPage) and the endpoint($range)
-    $($visibleStudents).slice(currentPage, $range).show();
+    $($visibleStudents).slice(startRange, $range).show();
+    console.log("Displaying " + $('li.student-item:visible').length + " students."); //logs visible students
+
   } else {
+
     let $range = (currentPage + 1) *10;//sets the end point of the slice
-    currentPage *= 10; //sets the start point of the slice
-    if (currentPage > topRange) {
+    let startRange = currentPage;
+    startRange *= 10; //sets the start point of the slice
+    if (startRange > topRange) {
       $range = topRange;
     }
     $hideStudents(); //hides all the students
+
     //displays only 10 students between the startpoint(currentPage) and the endpoint($range)
-    $($allStudents).slice(currentPage, $range).show();
+    $($allStudents).slice(startRange, $range).show();
+    console.log("Displaying " + $('li.student-item:visible').length + " students.");  //logs visible students
   }
 }//end of $displayStudents
 
-$displayStudents(studentCount, searchResults);
+$displayStudents(studentCount, searchResults);//calls fn.$displayStudents for initial page load
 
 
-// Create a function to hide all of the items in the list excpet for the ten you want to show
-// Tip: Keep in mind that with a list of 54 studetns, the last page will only display four
-// <div class="pagination">
-//   <ul>
-//     <li>
-//       <a class="active" href="#">1</a>
-//     </li>
 
-//pass argument studentCount or
 function pagination(arr){
 
   if ((document.querySelector('.pagination')) !== null){
     let pagination = document.querySelector('div.pagination')
     thePage.removeChild(pagination);
-    console.log('removeChild triggered');//for testing
   }
   //adds pagination to DOM
   $('.page').append(`<div class="pagination"><ul></ul></div>`);
   if (noResults === true) {
-    alert("No results match your search! Append this to the HTML")
+    $('.pagination').append('<h3>Sorry there are no Students that match your Search!</h3>');
   } else {
     for (let i = 0; i < $pageNumbers(arr); i+=1) {
       $('.pagination ul').append('<li><a href="#" value='+ i +'>' + (i+1) +'</a></li>');
     }
-    //add IF statement for for $pageNumbers !== 0 then move .active to current page
     $('.pagination li:first-child a').addClass("active");
   }
 }//end of fn.pagination
 
-pagination(studentCount);
+pagination(studentCount);//calls fn.pagination on initial page load
 
 //Event listner for search field
 $('.student-search').on('click keyup', function(){
@@ -87,10 +84,9 @@ $('.student-search').on('click keyup', function(){
   //on submit searchs for students names that match entered user query
   if($entered ==="" || $entered === 'reset'){
     searchResults = false;
-    currentPage = 0;//test this, also try get attribute from page 
-    console.log(currentPage + " " + searchResults);
-    pagination(studentCount);//switched orragement
-    $displayStudents(studentCount, searchResults);//goes down the else?
+    currentPage = 0;//Resets the page as to avoid weird outputs
+    pagination(studentCount);
+    $displayStudents(studentCount, searchResults)
 
   } else {
     $hideStudents();
@@ -99,27 +95,27 @@ $('.student-search').on('click keyup', function(){
       if($student.includes($entered)){
         $(this).parent().parent().show();
         searchResults = true;
+        noResults = false;
       }
     });//end of .each() loop
-    console.log('exited loop');
     $visibleStudents = $('li.student-item:visible');
     shownStudents = $visibleStudents.length;
     if (shownStudents === 0) {
-      console.log('shownStudents triggered === 0');//for testing
       noResults = true;
       pagination();
-      noResults = false;
     }
     $displayStudents(shownStudents, searchResults);
     pagination(shownStudents);
 
   }//end of if $entered ELSE statement
 
-  $('.pagination').on("click","a",function (){
+//Event listner for fn.pagination for changing pages of search results
+  $('.pagination ul').on("click","a",function (){
     $('.active').removeClass("active");
     $(this).addClass("active");
     currentPage = parseInt($(this).attr("value"), 10);
-    console.log(currentPage);
+    //For testing and tracking purposes
+    console.log('The current page selected value is:' + currentPage + ' The page number is: ' + (currentPage + 1));
     if (searchResults === true) {
       $displayStudents(shownStudents, searchResults);
     } else {
@@ -127,14 +123,15 @@ $('.student-search').on('click keyup', function(){
     }
     return
   });
-});//Parent Event End
+});//Parent Event Listener (.pagination ul) End
 
 //Event listener on 'click' that sets the active page and returns the page number value
-$('.pagination').on("click","a",function (){
+$('.pagination ul').on("click","a",function (){//added ul
   $('.active').removeClass("active");
   $(this).addClass("active");
   currentPage = parseInt($(this).attr("value"), 10);
-  console.log(currentPage);
+  //For testing and tracking purposes
+  console.log('The current page selected value is:' + currentPage + ' The page number is: ' + (currentPage + 1));
   if (searchResults === true) {
     $displayStudents(shownStudents, searchResults);
   } else {
@@ -142,13 +139,3 @@ $('.pagination').on("click","a",function (){
   }
   return
 });
-//ADDEvent listner  to parent .pagination ul that on click moves class+active to the target
-//and sets the currentPage value to be the number clicked
-
-// Create and append the pagination links - Creating a function that can do this is a good approach
-
-
-
-
-// Add functionality to the pagination buttons so that they show and hide the correct items
-// Tip: If you created a function above to show/hide list items, it could be helpful here
