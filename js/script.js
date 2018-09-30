@@ -23,7 +23,12 @@ $('div.page-header').append(
   </div>`
 );
 
-//displays 10 students only from the list, based on the current pagination page (currentPage value)
+/******************************************
+$displayStudents:
+topRange sets the max point of the slice ie. how long is the list of Students
+searchResults determine weather the list to be sliced is default list of students or is the list(jquery collection) from a search
+the start point of the slice is dervied from the currentPage value which is set by fn.pagination
+******************************************/
 function $displayStudents(topRange, searchResults){
   if (searchResults === true) {//pagination if the user is entering a search
     let $range = (currentPage + 1) *10;//sets the end point of the slice
@@ -59,14 +64,14 @@ $displayStudents(studentCount, searchResults);//calls fn.$displayStudents for in
 
 
 function pagination(arr){
-
+//removes old pagination for new results to be appended
   if ((document.querySelector('.pagination')) !== null){
     let pagination = document.querySelector('div.pagination')
     thePage.removeChild(pagination);
   }
   //adds pagination to DOM
   $('.page').append(`<div class="pagination"><ul></ul></div>`);
-  if (noResults === true) {
+  if (noResults === true) {//displays if no students match search
     $('.pagination').append('<h3>Sorry there are no Students that match your Search!</h3>');
   } else {
     for (let i = 0; i < $pageNumbers(arr); i+=1) {
