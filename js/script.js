@@ -23,7 +23,7 @@ $('div.page-header').append(
   </div>`
 );
 
-//displays 10 students only from the list, based on the current pagination page
+//displays 10 students only from the list, based on the current pagination page (currentPage value)
 function $displayStudents(topRange, searchResults){
   if (searchResults === true) {//pagination if the user is entering a search
     let $range = (currentPage + 1) *10;//sets the end point of the slice
@@ -34,7 +34,7 @@ function $displayStudents(topRange, searchResults){
     }
     $hideStudents(); //hides all the students
 
-    //displays only 10 students between the startpoint(currentPage) and the endpoint($range)
+    //displays only 10 students between the startpoint(currentPage*10) and the endpoint($range)
     $($visibleStudents).slice(startRange, $range).show();
     console.log("Displaying " + $('li.student-item:visible').length + " students."); //logs visible students
 
@@ -48,7 +48,7 @@ function $displayStudents(topRange, searchResults){
     }
     $hideStudents(); //hides all the students
 
-    //displays only 10 students between the startpoint(currentPage) and the endpoint($range)
+    //displays only 10 students between the startpoint(currentPage*10) and the endpoint($range)
     $($allStudents).slice(startRange, $range).show();
     console.log("Displaying " + $('li.student-item:visible').length + " students.");  //logs visible students
   }
@@ -107,7 +107,7 @@ $('.student-search').on('click keyup', function(){
     $displayStudents(shownStudents, searchResults);
     pagination(shownStudents);
 
-  }//end of if $entered ELSE statement
+  }//end of IF $entered ELSE statement
 
 //Event listner for fn.pagination for changing pages of search results
   $('.pagination ul').on("click","a",function (){
@@ -125,8 +125,13 @@ $('.student-search').on('click keyup', function(){
   });
 });//Parent Event Listener (.pagination ul) End
 
-//Event listener on 'click' that sets the active page and returns the page number value
-$('.pagination ul').on("click","a",function (){//added ul
+
+/******************************************
+Event listener on 'click' that sets the active page and returns the page number value to currentPage.
+The currentPage value is what $displayStudents uses to determine which slice of students list to show.
+Example: currentPage value of 4 passed to $displayStudents will show students 40-49 from the list.
+******************************************/
+$('.pagination ul').on("click","a",function (){
   $('.active').removeClass("active");
   $(this).addClass("active");
   currentPage = parseInt($(this).attr("value"), 10);
